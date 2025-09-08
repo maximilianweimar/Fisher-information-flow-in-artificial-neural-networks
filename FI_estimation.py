@@ -1,5 +1,4 @@
 import numpy as np
-#from numba import njit
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -63,12 +62,10 @@ def ReLU(x):
 
 ##################
 def get_FI(data, delta, lim, step_size, fluctuation_threshold, constant_threshold, noise_factor, biasedLFI=False):
-    print("calculating FI")
     dim = data.shape[2]
     temp = []
     lfi0 = get_LFI(data, delta, cutoff=1e-9)
     for up in range(0,lim,step_size):
-        print("up: ", up)
         r_up = np.random.normal(0.,1., size=(dim+up, dim)) # random projection
         transformed_data = activation(np.einsum('ij, abj -> abi', r_up, data)) # non-linear activation
         a = transformed_data.shape[0]
@@ -90,7 +87,6 @@ def get_FI(data, delta, lim, step_size, fluctuation_threshold, constant_threshol
             mean_lfi = (max(first3) + min(first3))/2
             first_fluctuation = fluctuation
             if np.abs(first_fluctuation/temp[0]) < constant_threshold: # if the LFI doesn't increase initially
-                print("LFI didn't increase after the 3rd iteration: ", transformed_data.shape[2])
                 return mean_lfi#[0] # , temp
         if len(temp) > 3:
             last3 = temp[-3:]
@@ -98,14 +94,13 @@ def get_FI(data, delta, lim, step_size, fluctuation_threshold, constant_threshol
             mean_lfi = (max(last3) + min(last3))/2
             last_fluctuation = fluctuation 
             if np.abs(last_fluctuation/first_fluctuation) < fluctuation_threshold:
-                print("finished regularly, max dim: ", transformed_data.shape[2])
                 return mean_lfi
                 break
     print("Warning: FI calculation did not converge! Increase the parameter lim. Note that large lim might require more data.")
     return max(temp)
 ###################################################
 
-def get_FI_curve(data, delta, lim, step_size, fluctuation_threshold, constant_threshold, noise_factor, biasedLFI=False):
+def get_FI_curve(data, delta, lim, step_size, fluctuation_threshold, constant_threshold, noise_factor, biasedLFI=False): # for visualization of the LFI curve
     dim = data.shape[2]
     temp = []
     lfi0 = get_LFI(data, delta, cutoff=1e-9)
