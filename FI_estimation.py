@@ -44,7 +44,7 @@ def get_LFI(data, delta, cutoff):
             print("components ignored: ", count)
         lfi = dmu.T@vh.T@np.diag(s_inv)@u.T@dmu  
     elif data.shape[2] == 1:
-        lfi = dmu**2/cov
+        lfi = (dmu**2/cov).item()
     else:
         print("wrong shape of data")
     return lfi
