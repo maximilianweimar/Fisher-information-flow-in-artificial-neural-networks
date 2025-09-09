@@ -13,7 +13,7 @@ def normalize(data):
     dimension = data.shape[2]
     theta_grid_len1 = data.shape[0]
     samples_per_theta1 = data.shape[1]
-    data = data.reshape(theta_grid_len1*samples_per_theta1, dimension)###
+    data = data.reshape(theta_grid_len1*samples_per_theta1, dimension)
 
     mu = np.zeros(dimension)
     std = np.zeros(dimension)
@@ -22,7 +22,7 @@ def normalize(data):
         std[i] = np.std(data[:,i])
     for i in range(data.shape[1]):
         data[:,i] = (data[:,i]-mu[i])/std[i]
-    data = data.reshape(theta_grid_len1,samples_per_theta1, dimension)###
+    data = data.reshape(theta_grid_len1,samples_per_theta1, dimension)
     return data
 
 def get_LFI(data, delta, cutoff):
@@ -53,14 +53,13 @@ def activation(x):
 
 def transform_data(r_up, batch, noise_factor):
     transformed_data = activation(np.einsum('ij, abj -> abi', r_up, batch))
-   # transformed_data = n_normalize(transformed_data)    #######################################
+   # transformed_data = n_normalize(transformed_data)    
     noise = noise_factor*np.random.uniform(0.,1., size=transformed_data.shape)
     transformed_data += noise
     return transformed_data
 def ReLU(x):
     return x*np.heaviside(x, 0)
 
-##################
 def get_FI(data, delta, lim, step_size, fluctuation_threshold, constant_threshold, noise_factor, biasedLFI=False):
     dim = data.shape[2]
     temp = []
@@ -73,14 +72,13 @@ def get_FI(data, delta, lim, step_size, fluctuation_threshold, constant_threshol
         c = transformed_data.shape[2]
         noise = noise_factor*np.random.normal(0.,1., size=transformed_data.shape) # regularize by adding noise
         transformed_data += noise
-        ###############
         lfi = get_LFI(transformed_data, delta, cutoff=1e-9)
         T = transformed_data.shape[1]
         N = transformed_data.shape[2]
         if biasedLFI == True: # compensate for the bias of the estimated LFI
             lfi = lfi - 2*N/(T*(2*delta)**2)
         temp.append(lfi)
-        #------------------ convergence criterion: this is quite generic so here should be some options
+        #------------------ convergence criterion
         if len(temp) == 3:
             first3 = temp[-3:]
             fluctuation = (max(first3) - min(first3))
@@ -98,7 +96,6 @@ def get_FI(data, delta, lim, step_size, fluctuation_threshold, constant_threshol
                 break
     print("Warning: FI calculation did not converge! Increase the parameter lim. Note that large lim might require more data.")
     return max(temp)
-###################################################
 
 def get_FI_curve(data, delta, lim, step_size, fluctuation_threshold, constant_threshold, noise_factor, biasedLFI=False): # for visualization of the LFI curve
     dim = data.shape[2]
@@ -112,7 +109,6 @@ def get_FI_curve(data, delta, lim, step_size, fluctuation_threshold, constant_th
         c = transformed_data.shape[2]
         noise = noise_factor*np.random.normal(0.,1., size=transformed_data.shape)
         transformed_data += noise
-        ###############
         lfi = get_LFI(transformed_data, delta, cutoff=1e-9)     
         T = transformed_data.shape[1]
         N = transformed_data.shape[2]
