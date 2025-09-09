@@ -52,8 +52,7 @@ def activation(x):
     return x*(np.heaviside(x, 0)+0.7*np.heaviside(-x, 0))
 
 def transform_data(r_up, batch, noise_factor):
-    transformed_data = activation(np.einsum('ij, abj -> abi', r_up, batch))
-   # transformed_data = n_normalize(transformed_data)    
+    transformed_data = activation(np.einsum('ij, abj -> abi', r_up, batch)) 
     noise = noise_factor*np.random.uniform(0.,1., size=transformed_data.shape)
     transformed_data += noise
     return transformed_data
