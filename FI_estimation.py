@@ -1,13 +1,4 @@
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.optim import SGD
-from torch.optim import Adam
-from torch.autograd import Variable
-from torch.utils.data import Dataset, DataLoader, TensorDataset
-import torchvision
-import torchvision.transforms.functional as TF
 
 def normalize(data):
     dimension = data.shape[2]
